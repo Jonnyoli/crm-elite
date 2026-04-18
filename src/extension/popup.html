@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <style>
         body {
-            width: 300px;
+            width: 320px;
             padding: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #111;
-            color: white;
+            background-color: #0d1117;
+            color: #e6edf3;
             margin: 0;
+            border-radius: 20px;
         }
         .header {
             display: flex;
@@ -18,94 +19,123 @@
             margin-bottom: 20px;
         }
         .logo {
-            width: 30px;
-            height: 30px;
-            background: #FE6B00;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #FE6B00, #ff8c33);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             font-size: 18px;
+            color: white;
+            box-shadow: 0 0 15px rgba(254, 107, 0, 0.3);
         }
-        h2 { margin: 0; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
+        .title {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
         .card {
-            background: #222;
-            border: 1px solid #333;
-            border-radius: 12px;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
             padding: 15px;
             margin-bottom: 15px;
         }
-        .field { margin-bottom: 10px; }
-        .label { font-size: 10px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 4px; }
-        .value { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        
-        input {
-            width: 100%;
-            padding: 10px;
-            background: #000;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: #FE6B00;
-            font-family: monospace;
-            font-size: 11px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
+        .property-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: white;
         }
-
-        button {
+        .property-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: #FE6B00;
+        }
+        .seller-info {
+            font-size: 11px;
+            color: #8b949e;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #30363d;
+        }
+        .btn {
             width: 100%;
             padding: 12px;
-            background: #FE6B00;
-            color: white;
             border: none;
             border-radius: 12px;
-            font-weight: bold;
+            font-weight: 800;
+            font-size: 12px;
             cursor: pointer;
             transition: all 0.2s;
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-bottom: 8px;
         }
-        button:hover { background: #ff8533; transform: translateY(-1px); }
-        button:active { transform: translateY(0); }
-        button:disabled { background: #444; cursor: not-allowed; }
-
-        .status { font-size: 11px; text-align: center; margin-top: 10px; }
-        .success { color: #22c55e; }
-        .error { color: #ef4444; }
+        .btn-primary {
+            background-color: #FE6B00;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #ff8c33;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #21262d;
+            color: #e6edf3;
+            border: 1px solid #30363d;
+        }
+        .btn-secondary:hover {
+            background-color: #30363d;
+        }
+        .status {
+            text-align: center;
+            font-size: 11px;
+            margin-top: 15px;
+            color: #8b949e;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: white;
+            font-size: 12px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
-    <div className="header">
-        <div className="logo">SI</div>
-        <h2>Clipper</h2>
+    <div class="header">
+        <div class="logo">SI</div>
+        <div class="title">SI Elite Clipper</div>
     </div>
 
-    <div id="setup-view">
-        <div className="label">SI Elite Token</div>
-        <input type="text" id="token-input" placeholder="Cola o teu token aqui...">
-        <button id="save-token">Guardar Token</button>
+    <div id="setup-view" style="display: none;">
+        <p style="font-size: 12px; color: #8b949e;">Introduz o teu Token de Acesso para começar:</p>
+        <input type="password" id="token-input" placeholder="SI_ELITE_...">
+        <button id="save-token" class="btn btn-primary">Ativar Extensão</button>
     </div>
 
-    <div id="main-view" style="display: none;">
-        <div className="card">
-            <div className="field">
-                <div className="label">Imóvel Detetado</div>
-                <div className="value" id="prop-name">A carregar...</div>
-            </div>
-            <div className="field">
-                <div className="label">Preço</div>
-                <div className="value" id="prop-price">-</div>
-            </div>
+    <div id="main-view">
+        <div class="card">
+            <div id="prop-name" class="property-name">A detetar imóvel...</div>
+            <div id="prop-price" class="property-price">---</div>
+            <div id="seller-info" class="seller-info">Sem contacto detectado</div>
         </div>
 
-        <button id="import-btn">Enviar para CRM</button>
-        <div id="status-msg" className="status"></div>
+        <button id="send-market" class="btn btn-primary">Importar para Mercado</button>
+        <button id="send-property" class="btn btn-secondary">Mover para Angariações</button>
         
-        <div style="margin-top: 15px; text-align: center;">
-            <a href="#" id="change-token" style="color: #666; font-size: 10px; text-decoration: none;">Alterar Token</a>
-        </div>
+        <p style="text-align: center; cursor: pointer; color: #FE6B00; font-size: 10px; margin-top: 10px;" id="change-token">Alterar Token</p>
     </div>
+
+    <div id="status" class="status"></div>
 
     <script src="popup.js"></script>
 </body>

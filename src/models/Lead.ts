@@ -9,6 +9,11 @@ const LeadSchema: Schema = new Schema({
     enum: ['NOVO', 'CONTACTADO', 'VISITA_AGENDADA', 'PROPOSTA', 'FECHADO_GANHO', 'PERDIDO'], 
     default: 'NOVO' 
   },
+  role: {
+    type: String,
+    enum: ['COMPRADOR', 'VENDEDOR'],
+    default: 'COMPRADOR'
+  },
   source:   { type: String, default: 'Outro' },
   notes:    { type: String, default: '' },
   tags:     { type: [String], default: [] },

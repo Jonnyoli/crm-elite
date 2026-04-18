@@ -1,91 +1,88 @@
 // SI Elite Clipper - Popup Script
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const setupView = document.getElementById('setup-view');
     const mainView = document.getElementById('main-view');
+    const setupView = document.getElementById('setup-view');
+    const statusDiv = document.getElementById('status');
     const tokenInput = document.getElementById('token-input');
-    const saveBtn = document.getElementById('save-token');
-    const importBtn = document.getElementById('import-btn');
-    const statusMsg = document.getElementById('status-msg');
-    const propName = document.getElementById('prop-name');
-    const propPrice = document.getElementById('prop-price');
-    const changeTokenLink = document.getElementById('change-token');
-
+    
     let currentData = null;
 
-    // Check for saved token
-    const result = await chrome.storage.local.get(['clipperToken']);
-    if (result.clipperToken) {
-        showMainView();
-    } else {
-        showSetupView();
+    // Check for existing token
+    const { clipperToken } = await chrome.storage.local.get('clipperToken');
+    if (!clipperToken) {
+        mainView.style.display = 'none';
+        setupView.style.display = 'block';
     }
 
-    saveBtn.addEventListener('click', () => {
+    // Save Token
+    document.getElementById('save-token').addEventListener('click', async () => {
         const token = tokenInput.value.trim();
-        if (token) {
-            chrome.storage.local.set({ clipperToken: token }, () => {
-                showMainView();
-            });
+        if (token.startsWith('SI_ELITE_')) {
+            await chrome.storage.local.set({ clipperToken: token });
+            window.location.reload();
+        } else {
+            statusDiv.innerText = "Token inválido!";
         }
     });
 
-    changeTokenLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        showSetupView();
+    // Change Token
+    document.getElementById('change-token').addEventListener('click', async () => {
+        await chrome.storage.local.remove('clipperToken');
+        window.location.reload();
     });
 
-    importBtn.addEventListener('click', async () => {
+    // Get Data from Content Script
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        
+        chrome.tabs.sendMessage(tab.id, { action: "getScrapedData" }, (response) => {
+            if (chrome.runtime.lastError) {
+                statusDiv.innerText = "Erro: faz Refresh na página.";
+                return;
+            }
+
+            if (response) {
+                currentData = response;
+                document.getElementById('prop-name').innerText = response.name;
+                document.getElementById('prop-price').innerText = response.price;
+                
+                if (response.sellerPhone) {
+                    document.getElementById('seller-info').innerHTML = `
+                        📞 <b style="color: #FE6B00">${response.sellerPhone}</b><br>
+                        👤 ${response.sellerName || 'Particular'}
+                    `;
+                }
+            }
+        });
+    } catch (e) {
+        statusDiv.innerText = "Erro ao ler a página.";
+    }
+
+    // Send Data (Market Mode)
+    document.getElementById('send-market').addEventListener('click', () => sendToCRM('MARKET'));
+
+    // Send Data (Property Mode)
+    document.getElementById('send-property').addEventListener('click', () => sendToCRM('PROPERTY'));
+
+    async function sendToCRM(type) {
         if (!currentData) return;
-
-        importBtn.disabled = true;
-        statusMsg.innerText = "A enviar para o CRM...";
-        statusMsg.className = "status";
-
-        const { clipperToken } = await chrome.storage.local.get(['clipperToken']);
+        
+        statusDiv.innerText = "A enviar para o CRM...";
+        const { clipperToken } = await chrome.storage.local.get('clipperToken');
 
         chrome.runtime.sendMessage({
             action: "sendToCRM",
             token: clipperToken,
-            type: "PROPERTY", // Default to property for clipper
+            type: type, // 'MARKET' or 'PROPERTY'
             data: currentData
         }, (response) => {
             if (response && response.success) {
-                statusMsg.innerText = "✓ Enviado com sucesso!";
-                statusMsg.className = "status success";
+                statusDiv.innerHTML = "<b style='color: #4ade80'>Sucesso! Importado.</b>";
+                setTimeout(() => window.close(), 1500);
             } else {
-                statusMsg.innerText = "✗ Erro: " + (response?.error || "Falha na ligação");
-                statusMsg.className = "status error";
-                importBtn.disabled = false;
+                statusDiv.innerHTML = "<b style='color: #f87171'>Erro no envio.</b>";
             }
         });
-    });
-
-    function showSetupView() {
-        setupView.style.display = 'block';
-        mainView.style.display = 'none';
-    }
-
-    async function showMainView() {
-        setupView.style.display = 'none';
-        mainView.style.display = 'block';
-        
-        // Request data from content script
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        
-        if (tab && tab.url && (tab.url.includes('casafari') || tab.url.includes('idealista') || tab.url.includes('imovirtual'))) {
-            chrome.tabs.sendMessage(tab.id, { action: "getScrapedData" }, (data) => {
-                if (data) {
-                    currentData = data;
-                    propName.innerText = data.name;
-                    propPrice.innerText = data.price;
-                } else {
-                    propName.innerText = "Não foi possível ler os dados.";
-                }
-            });
-        } else {
-            propName.innerText = "Visita um portal imobiliário!";
-            importBtn.disabled = true;
-        }
     }
 });

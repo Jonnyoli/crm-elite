@@ -2,9 +2,8 @@ import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Lead from '@/models/Lead';
 import Property from '@/models/Property';
+import MarketProperty from '@/models/MarketProperty';
 
-// Simple authentication token - in a real app this would be more robust
-// For this demo, we'll check it against a hardcoded value or a common prefix
 const CLIPPER_TOKEN_PREFIX = 'SI_ELITE_';
 
 export async function POST(req: Request) {
@@ -16,30 +15,53 @@ export async function POST(req: Request) {
 
     // Basic Token Validation
     if (!token || !token.startsWith(CLIPPER_TOKEN_PREFIX)) {
-      return NextResponse.json({ success: false, error: 'Token inválido ou não fornecido.' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Token inválido.' }, { status: 401 });
     }
 
     let result;
 
-    if (type === 'LEAD') {
-      result = await Lead.create({
-        name: data.name || 'Nova Lead clipper',
-        email: data.email || 'n/a',
-        phone: data.phone || 'n/a',
-        source: data.source || 'Clipper Extension',
-        notes: `Importado de: ${data.url}\n\nPreço Inicial: ${data.price}\nLocalização: ${data.location}`,
-        status: 'NOVO'
+    if (type === 'MARKET') {
+      // 1. Save to Market Database (Separated from official listings)
+      result = await MarketProperty.create({
+        title: data.name || data.title || 'Imóvel de Mercado',
+        price: parseFloat(data.price?.toString().replace(/[^0-9]/g, '') || '0'),
+        location: data.location || '',
+        address: data.address || '',
+        imageUrl: data.imageUrl || data.image || '',
+        rooms: data.rooms || '',
+        area: data.area || '',
+        sellerName: data.sellerName || '',
+        sellerPhone: data.sellerPhone || '',
+        isParticular: data.isParticular === 'Sim' || !!data.isParticular,
+        source: data.source || 'Casafari Clipper',
+        sourceUrl: data.url || '',
+        notes: `Importado do Clipper. Vendedor: ${data.sellerName || 'n/a'}`,
+        status: 'ATIVO'
       });
+
+      // 2. If there is a phone number, also create a Lead as a VENDEDOR
+      if (data.sellerPhone) {
+        await Lead.create({
+          name: data.sellerName || 'Vendedor Mercado',
+          phone: data.sellerPhone,
+          email: `${data.sellerName?.toLowerCase().replace(/\s/g, '.') || 'vendedor'}@mercado.com`,
+          role: 'VENDEDOR',
+          source: 'SI Elite Clipper',
+          notes: `Proprietário do imóvel: ${data.name || data.title}\nURL: ${data.url}`,
+          tags: ['Market Prospect', 'Seller']
+        });
+      }
     } else if (type === 'PROPERTY') {
+      // Direct import to official listings
       result = await Property.create({
         address: data.address || data.location || 'Sem morada',
-        price: parseFloat(data.price?.replace(/[^0-9]/g, '') || '0'),
+        price: parseFloat(data.price?.toString().replace(/[^0-9]/g, '') || '0'),
         type: data.propertyType || 'MORADIA',
         status: 'DISPONIVEL',
         description: `Importado via Clipper de: ${data.url}`,
-        imageUrl: data.imageUrl,
-        features: data.features || [],
-        location: data.location
+        imageUrl: data.imageUrl || data.image,
+        location: data.location,
+        sellerPhone: data.sellerPhone // Ad-hoc storage if needed
       });
     } else {
       return NextResponse.json({ success: false, error: 'Tipo de importação inválido.' }, { status: 400 });
@@ -47,11 +69,11 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      message: `Importado com sucesso: ${type}`,
+      message: `Importado com sucesso para ${type}`,
       data: result 
     }, {
       headers: {
-        'Access-Control-Allow-Origin': '*', // Required for browser extensions
+        'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       }
@@ -63,7 +85,6 @@ export async function POST(req: Request) {
   }
 }
 
-// Handle CORS preflight
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
