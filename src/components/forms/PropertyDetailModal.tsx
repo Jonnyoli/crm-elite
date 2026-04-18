@@ -16,7 +16,8 @@ import {
   Building2,
   Share2,
   Loader2,
-  Star
+  Star,
+  Sparkles
 } from 'lucide-react';
 import { useCRMStore } from '@/lib/store';
 import { cn, formatCurrency } from '@/lib/utils';
@@ -33,6 +34,7 @@ export default function PropertyDetailModal({ isOpen, onClose, propertyId }: Pro
   const [formData, setFormData] = useState<Partial<Property> | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -140,6 +142,25 @@ export default function PropertyDetailModal({ isOpen, onClose, propertyId }: Pro
       }
       
       setFormData({...formData, features});
+  };
+
+  const generateAIDescription = async () => {
+    if (!formData) return;
+    setIsGenerating(true);
+    
+    // Simulate API delay for dramatic effect
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    const type = formData.type || 'Imóvel';
+    const feats = (formData.features && formData.features.length) 
+        ? formData.features.join(', ')
+        : 'excelentes acabamentos e muita luz natural';
+    const loc = formData.address || 'uma zona privilegiada';
+    
+    const description = `✨ EXCLUSIVO SOLUÇÕES IDEAIS ✨\n\nExcelente ${type} localizado em ${loc}, desenhado para proporcionar o máximo conforto e qualidade de vida à sua família.\n\nEste imóvel de excelência destaca-se pelos seguintes atributos memoráveis:\n✅ ${feats.replace(/,/g, '\n✅')}\n\nIdeal para quem procura exclusividade, conveniência e bem-estar. Não perca esta oportunidade de negócio segura e rentável!\n\n📞 Fale com a nossa equipa hoje mesmo para agendar a sua visita e sentir o potencial desta casa.`;
+    
+    setFormData(prev => prev ? { ...prev, description } : null);
+    setIsGenerating(false);
   };
 
   if (!isOpen || !formData || !propertyId) return null;
@@ -314,7 +335,16 @@ export default function PropertyDetailModal({ isOpen, onClose, propertyId }: Pro
 
                          <div className="space-y-2">
                              <div className="flex items-center justify-between">
-                                <label className="text-[10px] font-black tracking-[0.2em] uppercase text-muted-foreground">Descrição</label>
+                                <label className="text-[10px] font-black tracking-[0.2em] uppercase text-muted-foreground">Descrição Base</label>
+                                <button 
+                                   type="button"
+                                   onClick={generateAIDescription}
+                                   disabled={isGenerating}
+                                   className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+                                >
+                                    {isGenerating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                    Gerar com IA
+                                </button>
                              </div>
                              <textarea 
                                  rows={4}

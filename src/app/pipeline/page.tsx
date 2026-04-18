@@ -287,6 +287,18 @@ export default function PipelinePage() {
   const handleDropDeal = useCallback((dealId: string, stageId: LeadStatus) => {
       console.log(`Native DnD Update: Deal ${dealId} -> Stage ${stageId}`);
       updateDeal(dealId, { stage: stageId });
+      
+      if (stageId === 'FECHADO_GANHO') {
+          import('canvas-confetti').then((module) => {
+              const confetti = module.default;
+              confetti({
+                  particleCount: 150,
+                  spread: 80,
+                  origin: { y: 0.6 },
+                  colors: ['#FE6B00', '#1B2A57', '#FFFFFF', '#10B981']
+              });
+          });
+      }
   }, [updateDeal]);
 
   const totalValue = useMemo(() => deals.reduce((sum, d) => sum + d.value, 0), [deals]);

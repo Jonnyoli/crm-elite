@@ -13,7 +13,12 @@ import {
   Briefcase,
   CheckCircle2,
   Clock,
-  AlertTriangle
+  AlertTriangle,
+  Send,
+  CalendarDays,
+  FileText,
+  Upload,
+  File
 } from 'lucide-react';
 import { useCRMStore } from '@/lib/store';
 import { cn, formatDate, formatCurrency } from '@/lib/utils';
@@ -44,7 +49,14 @@ export default function LeadDetailModal({ isOpen, onClose, leadId }: LeadDetailM
   };
 
   const cleanPhone = lead.phone.replace(/\s/g, '');
-  const waUrl = `https://wa.me/351${cleanPhone}?text=Olá ${lead.name.split(' ')[0]}, fala o consultor da SI Coimbra...`;
+  const baseWaUrl = `https://wa.me/351${cleanPhone}?text=`;
+  const firstName = lead.name.split(' ')[0];
+  
+  const waTemplates = [
+    { id: '1', icon: CalendarDays, label: 'Agendar Visita', msg: `Olá ${firstName}, sou o seu consultor na Soluções Ideais. Gostaria de agendar uma visita para ver os imóveis que falámos?` },
+    { id: '2', icon: FileText, label: 'Enviar Brochura', msg: `Olá ${firstName}, conforme o nosso contacto, envio em anexo a brochura com todas as informações do imóvel.` },
+    { id: '3', icon: Send, label: 'Follow Up', msg: `Olá ${firstName}! Como correu a visita? Teria interesse em avançar com uma proposta?` },
+  ];
 
   return (
     <AnimatePresence>
@@ -124,15 +136,25 @@ export default function LeadDetailModal({ isOpen, onClose, leadId }: LeadDetailM
                              </div>
                          </div>
                      </div>
-                     <div className="mt-6 pt-6 border-t border-white/5">
-                        <a 
-                           href={waUrl}
-                           target="_blank"
-                           className="w-full flex items-center justify-center gap-2 py-3 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 font-black uppercase text-[10px] tracking-widest rounded-xl transition-all"
-                        >
-                            <MessageCircle className="w-4 h-4" />
-                            Conversar no WhatsApp
-                        </a>
+                     <div className="mt-6 pt-6 border-t border-white/5 space-y-2">
+                        <div className="flex items-center gap-2 mb-3">
+                           <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                           <h4 className="text-[10px] font-black uppercase tracking-widest text-white/50">WhatsApp Actions</h4>
+                        </div>
+                        {waTemplates.map(t => (
+                            <a 
+                               key={t.id}
+                               href={baseWaUrl + encodeURIComponent(t.msg)}
+                               target="_blank"
+                               className="w-full flex items-center justify-between px-4 py-2.5 bg-white/5 hover:bg-[#25D366]/10 text-white hover:text-[#25D366] border border-transparent hover:border-[#25D366]/20 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all group"
+                            >
+                                <span className="flex items-center gap-2">
+                                    <t.icon className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100" />
+                                    {t.label}
+                                </span>
+                                <Send className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                            </a>
+                        ))}
                      </div>
                  </div>
 
@@ -196,6 +218,22 @@ export default function LeadDetailModal({ isOpen, onClose, leadId }: LeadDetailM
                                  </div>
                              ))
                          )}
+                     </div>
+                 </div>
+
+                 <div className="bg-white/5 border border-white/5 rounded-3xl p-6">
+                     <div className="flex items-center justify-between mb-4">
+                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 flex items-center gap-2">
+                             <File className="w-4 h-4" /> Documentos Anexos
+                         </h3>
+                         <button className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-all">
+                             <Upload className="w-3.5 h-3.5" />
+                         </button>
+                     </div>
+                     <div className="border-2 border-dashed border-white/10 rounded-2xl p-6 text-center hover:bg-white/5 hover:border-white/20 transition-all cursor-pointer group">
+                         <Upload className="w-8 h-8 text-white/20 mx-auto mb-2 group-hover:text-white/50 group-hover:-translate-y-1 transition-all" />
+                         <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Arraste PDFs ou Clique</p>
+                         <p className="text-[8px] font-bold text-white/20 mt-1">CPCV, Contratos, etc.</p>
                      </div>
                  </div>
 

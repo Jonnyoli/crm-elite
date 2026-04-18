@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 
 export default function SettingsPage() {
   const { settings, updateSettings, syncPipedrive } = useCRMStore();
-  const [activeTab, setActiveTab] = useState<'PROFILE' | 'EMAIL' | 'PIPEDRIVE' | 'NOTIFICATIONS'>('PROFILE');
+  const [activeTab, setActiveTab] = useState<'PROFILE' | 'EMAIL' | 'PIPEDRIVE' | 'NOTIFICATIONS' | 'CLIPPER'>('PROFILE');
   const [isSyncing, setIsSyncing] = useState(false);
 
   const handleSync = async () => {
@@ -60,6 +60,12 @@ export default function SettingsPage() {
             onClick={() => setActiveTab('NOTIFICATIONS')} 
             icon={<Bell className="w-4 h-4" />} 
             label="Notificações" 
+          />
+          <TabButton 
+            active={activeTab === 'CLIPPER'} 
+            onClick={() => setActiveTab('CLIPPER')} 
+            icon={<Zap className="w-4 h-4 text-emerald-500" />} 
+            label="SI Elite Clipper" 
           />
         </div>
 

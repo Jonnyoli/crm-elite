@@ -14,6 +14,9 @@ interface CRMStore {
     connectedEmail: string | null;
     pipedriveApiKey: string | null;
     pipedriveStatus: 'CONNECTED' | 'DISCONNECTED';
+    casafariApiKey: string | null;
+    casafariStatus: 'CONNECTED' | 'DISCONNECTED';
+    clipperToken: string | null;
   };
   
   // Actions
@@ -53,6 +56,9 @@ export const useCRMStore = create<CRMStore>((set, get) => ({
     connectedEmail: null,
     pipedriveApiKey: null,
     pipedriveStatus: 'DISCONNECTED',
+    casafariApiKey: null,
+    casafariStatus: 'DISCONNECTED',
+    clipperToken: 'SI_ELITE_' + Math.random().toString(36).substring(2, 15).toUpperCase(),
   },
 
   initialize: async () => {

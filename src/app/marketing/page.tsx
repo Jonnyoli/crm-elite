@@ -9,14 +9,15 @@ import {
   Share2, 
   FileText, 
   ArrowRight,
-  Zap,
   Star,
-  Users
+  Users,
+  Calendar
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import FlyerGenerator from '@/components/marketing/FlyerGenerator';
 import SocialMediaKit from '@/components/marketing/SocialMediaKit';
 import EmailCampaignKit from '@/components/marketing/EmailCampaignKit';
+import ContentPlanner from '@/components/marketing/ContentPlanner';
 
 const marketingTools = [
   {
@@ -41,6 +42,14 @@ const marketingTools = [
     description: 'Templates de luxo para prospecção e acompanhamento de leads.',
     icon: Mail,
     color: 'bg-emerald-500',
+    status: 'ACTIVE'
+  },
+  {
+    id: 'planner',
+    title: 'Planeador de Conteúdo',
+    description: 'Organize as suas ideias para Reels e TikTok num calendário e funil.',
+    icon: Calendar,
+    color: 'bg-purple-500',
     status: 'ACTIVE'
   }
 ];
@@ -84,7 +93,7 @@ export default function MarketingPage() {
       </div>
 
       {/* Tools Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {marketingTools.map((tool) => (
           <button
             key={tool.id}
@@ -134,6 +143,8 @@ export default function MarketingPage() {
           <SocialMediaKit />
         ) : activeTool === 'email' ? (
           <EmailCampaignKit />
+        ) : activeTool === 'planner' ? (
+          <ContentPlanner />
         ) : (
           <div className="bg-card border border-border rounded-[40px] p-20 flex flex-col items-center justify-center text-center">
             <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-6">

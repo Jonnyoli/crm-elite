@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "SI Elite Clipper",
+  "version": "1.0",
+  "description": "Captura leads e imóveis diretamente para o teu CRM SI Elite.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.casafari.com/*",
+    "https://*.idealista.pt/*",
+    "https://*.imovirtual.com/*",
+    "http://localhost:3000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.casafari.com/*",
+        "https://*.idealista.pt/*",
+        "https://*.imovirtual.com/*"
+      ],
+      "js": ["content.js"]
+    }
+  ]
+}
