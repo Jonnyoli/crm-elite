@@ -10,7 +10,7 @@ export async function GET() {
     // Map _id to id
     const results = properties.map(p => ({
       ...p.toObject(),
-      id: p._id.toString()
+      id: (p._id as any).toString()
     }));
 
     return NextResponse.json({ success: true, data: results });
