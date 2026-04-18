@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Building2, CheckCircle2, User, Phone, Mail, Euro } from 'lucide-react';
 import { useCRMStore } from '@/lib/store';
-import { LeadSource } from '@/types';
+// We don't need LeadSource if it's not exported
 
 export default function OpenHousePage() {
   const { addLead } = useCRMStore();
@@ -23,7 +23,7 @@ export default function OpenHousePage() {
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
-      source: 'OPEN_HOUSE' as LeadSource,
+      source: 'OPEN_HOUSE',
       status: 'NOVO',
       notes: `Orçamento/Procura: ${formData.notes}`,
       tags: ['Open House Visitor']

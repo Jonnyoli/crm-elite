@@ -12,7 +12,7 @@
     "https://*.casafari.com/*",
     "https://*.idealista.pt/*",
     "https://*.imovirtual.com/*",
-    "http://localhost:3000/*"
+    "https://crm-elite.vercel.app/*"
   ],
   "action": {
     "default_popup": "popup.html"

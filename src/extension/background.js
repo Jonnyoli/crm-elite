@@ -4,8 +4,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "sendToCRM") {
         const { token, type, data } = request;
         
-        // Use localhost:3000 for development, or the production URL
-        const apiUrl = "http://localhost:3000/api/crm/import";
+        // Production URL
+        const apiUrl = "https://crm-elite.vercel.app/api/crm/import";
 
         fetch(apiUrl, {
             method: "POST",

@@ -11,7 +11,8 @@ import {
   ArrowRight,
   Star,
   Users,
-  Calendar
+  Calendar,
+  Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import FlyerGenerator from '@/components/marketing/FlyerGenerator';

@@ -245,6 +245,69 @@ export default function SettingsPage() {
               </div>
             )}
 
+            {activeTab === 'CLIPPER' && (
+              <div className="p-8 space-y-8 animate-in slide-in-from-right-4 duration-500">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-2xl font-black tracking-tighter uppercase font-outfit">SI Elite Clipper</h3>
+                    <p className="text-sm text-muted-foreground">O "Botão Mágico" para o teu browser Opera/Chrome.</p>
+                  </div>
+                  <div className="bg-emerald-500/10 text-emerald-500 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
+                    DISPONÍVEL
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="p-10 border border-white/5 bg-white/[0.02] rounded-[32px] space-y-6">
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-[#FE6B00]">O Teu Token de Acesso</label>
+                      <div className="flex gap-3">
+                        <div className="flex-1 px-5 py-4 bg-background border border-border rounded-2xl font-mono text-sm flex items-center justify-between group">
+                          <code className="text-emerald-500">{settings.clipperToken || 'A gerar...'}</code>
+                          <button 
+                            onClick={() => {
+                              navigator.clipboard.writeText(settings.clipperToken || '');
+                              alert('Token copiado!');
+                            }}
+                            className="opacity-0 group-hover:opacity-100 transition-all text-[10px] font-bold uppercase bg-white/5 px-3 py-1 rounded-lg"
+                          >
+                            Copiar
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground italic">
+                        Copia este código para a tua extensão SI Elite Clipper para ativar a sincronização.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <h4 className="font-bold flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs">1</div>
+                        Instalação no Browser
+                      </h4>
+                      <ul className="text-xs text-muted-foreground space-y-2 list-disc pl-4">
+                        <li>Abre o menu de Extensões do teu browser.</li>
+                        <li>Ativa o "Modo de Programador".</li>
+                        <li>Clica em "Carregar descompactada" e escolhe a pasta <b>src/extension</b>.</li>
+                      </ul>
+                    </div>
+                    <div className="space-y-4">
+                      <h4 className="font-bold flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs">2</div>
+                        Como Usar
+                      </h4>
+                      <ul className="text-xs text-muted-foreground space-y-2 list-disc pl-4">
+                        <li>Vai ao Casafari ou Idealista.</li>
+                        <li>Clica no ícone da SI Elite na barra do browser.</li>
+                        <li>Clica em <b>"Enviar para CRM"</b>.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
